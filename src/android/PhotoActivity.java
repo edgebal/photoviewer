@@ -1,6 +1,7 @@
 package com.sarriaroman.PhotoViewer;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
+import uk.co.senab.photoview.PhotoView;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,7 +12,6 @@ import android.os.Environment;
 import android.util.Base64;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -34,7 +34,7 @@ import java.io.IOException;
 public class PhotoActivity extends Activity {
 	private PhotoViewAttacher mAttacher;
 
-	private ImageView photo;
+	private PhotoView photo;
 	private String imageUrl;
 
 	private ImageButton closeBtn;
@@ -107,7 +107,7 @@ public class PhotoActivity extends Activity {
 		shareBtn = (ImageButton) findViewById( getApplication().getResources().getIdentifier("shareBtn", "id", getApplication().getPackageName()) );
 
 		// Photo Container
-		photo = (ImageView) findViewById( getApplication().getResources().getIdentifier("photoView", "id", getApplication().getPackageName()) );
+		photo = (PhotoView) findViewById( getApplication().getResources().getIdentifier("photoView", "id", getApplication().getPackageName()) );
 		mAttacher = new PhotoViewAttacher(photo);
 
 		// Title TextView
@@ -129,7 +129,7 @@ public class PhotoActivity extends Activity {
 	private void hideLoadingAndUpdate() {
 		photo.setVisibility(View.VISIBLE);
 
-        shareBtn.setVisibility(shareBtnVisibility);
+		shareBtn.setVisibility(shareBtnVisibility);
 
 		mAttacher.update();
 	}
@@ -139,9 +139,10 @@ public class PhotoActivity extends Activity {
 	 *
 	 */
 	private void loadImage() {
-		if (imageUrl.startsWith("http") || imageUrl.startsWith("file")) {
+		if (imageUrl.startsWith("http")) {
 			Glide.with(this)
 				.load(imageUrl)
+				.skipMemoryCache(true)
 				.diskCacheStrategy(DiskCacheStrategy.SOURCE)
 				.fitCenter()
 				.listener(new RequestListener<String, GlideDrawable>() {
@@ -181,7 +182,7 @@ public class PhotoActivity extends Activity {
 	 *
 	 * @return
 	 */
-	public Uri getLocalBitmapUri(ImageView imageView) {
+	public Uri getLocalBitmapUri(PhotoView imageView) {
 		Drawable drawable = imageView.getDrawable();
 		Bitmap bmp = null;
 
